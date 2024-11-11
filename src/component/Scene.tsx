@@ -1,55 +1,42 @@
-// Scene.tsx
-import React, { useRef, useState, useEffect } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Vector3 } from 'three';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Mesh } from 'three';
+import { EffectComposer, N8AO, SMAA, Bloom } from "@react-three/postprocessing"
+import { Physics, useSphere } from '@react-three/cannon';
 
-const Cube: React.FC = () => {
-  const cubeRef = useRef<any>(null);
-  const [mousePosition, setMousePosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  // Actualizar la posición del ratón
-  useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      setMousePosition({
-        x: (event.clientX / window.innerWidth) * 2 - 1,
-        y: -(event.clientY / window.innerHeight) * 2 + 1,
-      });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, []);
-
-  // Actualizar la posición del cubo en cada frame
-  useFrame(() => {
-    if (cubeRef.current) {
-      setTimeout(() => {
-        cubeRef.current.position.x = mousePosition.x * 5; 
-        cubeRef.current.position.y = mousePosition.y * 5; 
-      }, 50);
-    }
-  });
-
+function Pointer() {
+  const viewport = useThree((state) => state.viewport);
+  const [ref, api] = useSphere<Mesh>(() => ({ type: 'Kinematic', args: [3], position: [0, 0, 0] }));
+  useFrame((state) =>
+    api.position.set((state.mouse.x * viewport.width) / 2, (state.mouse.y * viewport.height) / 2, 0)
+  );
   return (
-    <mesh ref={cubeRef} position={new Vector3()}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color="red" />
+    <mesh ref={ref} scale={0.2}>
+      <sphereGeometry />
+      <meshBasicMaterial color={[4, 4, 4]} toneMapped={false} />
+      <pointLight intensity={8} distance={10} />
     </mesh>
+  );
+}
+
+const Scene: React.FC = () => {
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
+      <Canvas style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[5, 5, 5]} intensity={10} />
+        <Physics>
+          <Pointer />
+        </Physics>
+        <EffectComposer multisampling={0}>
+          <N8AO halfRes color="black" aoRadius={2} intensity={1} aoSamples={6} denoiseSamples={4} />
+          <Bloom mipmapBlur levels={7} intensity={1} />
+          <SMAA />
+        </EffectComposer>
+        <color attach="background" args={['black']} />
+      </Canvas>
+    </div>
   );
 };
 
-const Scene: React.FC = () => {
-    return (
-      <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
-        <Canvas style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-          <ambientLight intensity={0.5} />
-          <directionalLight position={[5, 5, 5]} intensity={1} />
-          <Cube />
-        </Canvas>
-      </div>
-    );
-  };
 export default Scene;
