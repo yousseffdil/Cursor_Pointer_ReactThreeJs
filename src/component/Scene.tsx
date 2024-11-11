@@ -13,7 +13,7 @@ function Pointer() {
   return (
     <mesh ref={ref} scale={0.2}>
       <sphereGeometry />
-      <meshBasicMaterial color={[4, 4, 4]} toneMapped={false} />
+      <meshBasicMaterial color={[40, 10, 25]} toneMapped={false} />
       <pointLight intensity={8} distance={10} />
     </mesh>
   );
