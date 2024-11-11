@@ -26,15 +26,17 @@ const Cube: React.FC = () => {
   // Actualizar la posición del cubo en cada frame
   useFrame(() => {
     if (cubeRef.current) {
-      cubeRef.current.position.x = mousePosition.x * 5; // Ajusta el factor de escala a tu preferencia
-      cubeRef.current.position.y = mousePosition.y * 5; // Ajusta el factor de escala a tu preferencia
+      setTimeout(() => {
+        cubeRef.current.position.x = mousePosition.x * 5; 
+        cubeRef.current.position.y = mousePosition.y * 5; 
+      }, 50);
     }
   });
 
   return (
-    <mesh ref={cubeRef} position={new Vector3(0, 0, 0)}>
+    <mesh ref={cubeRef} position={new Vector3()}>
       <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color="orange" />
+      <meshStandardMaterial color="red" />
     </mesh>
   );
 };
