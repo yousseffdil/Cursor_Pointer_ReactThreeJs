@@ -13,8 +13,8 @@ function Pointer() {
   return (
     <mesh ref={ref} scale={0.2}>
       <sphereGeometry />
-      <meshBasicMaterial color={[40, 10, 25]} toneMapped={false} />
-      <pointLight intensity={8} distance={10} />
+      <meshBasicMaterial color={[0, 50, 20]} toneMapped={false} />
+      <pointLight intensity={1} distance={1} />
     </mesh>
   );
 }
@@ -30,7 +30,7 @@ const Scene: React.FC = () => {
         </Physics>
         <EffectComposer multisampling={0}>
           <N8AO halfRes color="black" aoRadius={2} intensity={1} aoSamples={6} denoiseSamples={4} />
-          <Bloom mipmapBlur levels={7} intensity={1} />
+          <Bloom mipmapBlur levels={9} intensity={0.5} />
           <SMAA />
         </EffectComposer>
         <color attach="background" args={['black']} />
